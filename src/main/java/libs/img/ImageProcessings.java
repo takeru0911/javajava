@@ -1,6 +1,10 @@
 package libs.img;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import libs.img.exception.IllegalImageSizeException;
 
@@ -30,10 +34,11 @@ public class ImageProcessings {
 
        for(int x = 0; x < compareImg.getWidth(); x++){
            for(int y = 0; y < compareImg.getHeight(); y++){
+
                if(compareImg.getRGB(x, y) != matchImg.getRGB(x, y)){
-                   if(matchImg.getRGB(x, y) == 0xffffff){
+                   if((matchImg.getRGB(x, y) & 0xffffff) == 0xffffff){
                        matchResultImage.setRGB(x, y, falseTrueColor);
-                   }else if(matchImg.getRGB(x, y) == 0x000000){
+                   }else if((matchImg.getRGB(x, y) & 0xffffff) == 0){
                        matchResultImage.setRGB(x, y, trueFalseColor);
                    }
                }else{
@@ -42,5 +47,24 @@ public class ImageProcessings {
            }
        }
        return matchResultImage;
+    }
+
+    public BufferedImage trim(BufferedImage objectImg, int x, int y, int width, int height){
+        return objectImg.getSubimage(x, y, width, height);
+    }
+
+    public BufferedImage simpleZoom(BufferedImage objectImg, int zoomRate){
+        BufferedImage zoomImg = new BufferedImage(objectImg.getWidth(), objectImg.getHeight(), objectImg.getType());
+
+        for(int x = 0; x < objectImg.getWidth(); x++){
+            for(int y = 0; y < objectImg.getHeight(); y++){
+                for(int i = x * zoomRate; i < (x + 1) * zoomRate; i++){
+                    for(int j = y * zoomRate; j < (y + 1) * zoomRate; j++){
+                        zoomImg.setRGB(i, j, objectImg.getRGB(x, y));
+                    }
+                }
+            }
+        }
+        return zoomImg;
     }
 }
